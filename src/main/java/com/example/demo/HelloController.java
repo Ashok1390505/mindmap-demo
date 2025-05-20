@@ -10,6 +10,6 @@ public class HelloController {
 
     @GetMapping("/hello")
     public String sayHello() {
-        return "Hello, Mindmap-demo-new-version !";
+        return "Hello, Mindmap update version !";
     }
 }
