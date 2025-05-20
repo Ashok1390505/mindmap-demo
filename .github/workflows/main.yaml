@@ -27,12 +27,12 @@ jobs:
           java-version: '17'
 
       # Step 3: Run Unit Tests
-      # - name: Run Unit Tests
-      #   run: mvn clean test
+      - name: Run Unit Tests
+        run: mvn clean test
 
-      # # Step 4: Run Integration Tests
-      # - name: Run Integration Tests
-      #   run: mvn failsafe:integration-test failsafe:verify
+      # Step 4: Run Integration Tests
+      - name: Run Integration Tests
+        run: mvn failsafe:integration-test failsafe:verify
 
       # Step 5: Set up kubectl
       - name: Install kubectl
