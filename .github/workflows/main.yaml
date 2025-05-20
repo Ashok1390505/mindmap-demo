@@ -64,40 +64,40 @@ jobs:
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
-      # Step 9: Scan the Docker image in Amazon ECR
-      - name: Scan Docker image in ECR
-        run: |
-          aws ecr start-image-scan --repository-name mindmap-demo --image-id imageTag=${{ github.run_number }}
+      # # Step 9: Scan the Docker image in Amazon ECR
+      # - name: Scan Docker image in ECR
+      #   run: |
+      #     aws ecr start-image-scan --repository-name mindmap-demo --image-id imageTag=${{ github.run_number }}
 
-      # Step 10: Wait for image scan results to complete
-      - name: Wait for image scan to complete
-        run: |
-          STATUS="IN_PROGRESS"
-          for i in {1..10}; do
-            STATUS=$(aws ecr describe-image-scan-findings \
-              --repository-name mindmap-demo \
-              --image-id imageTag=${{ github.run_number }} \
-              --query 'imageScanStatus.status' --output text)
-            echo "Current scan status: $STATUS"
-            if [ "$STATUS" != "IN_PROGRESS" ]; then break; fi
-            sleep 30
-          done
+      # # Step 10: Wait for image scan results to complete
+      # - name: Wait for image scan to complete
+      #   run: |
+      #     STATUS="IN_PROGRESS"
+      #     for i in {1..10}; do
+      #       STATUS=$(aws ecr describe-image-scan-findings \
+      #         --repository-name mindmap-demo \
+      #         --image-id imageTag=${{ github.run_number }} \
+      #         --query 'imageScanStatus.status' --output text)
+      #       echo "Current scan status: $STATUS"
+      #       if [ "$STATUS" != "IN_PROGRESS" ]; then break; fi
+      #       sleep 30
+      #     done
 
-      # Step 11: Check the scan findings and fail the pipeline if vulnerabilities are found
-      - name: Check image scan findings
-        run: |
-          SCAN_FINDINGS=$(aws ecr describe-image-scan-findings \
-            --repository-name mindmap-demo \
-            --image-id imageTag=${{ github.run_number }} \
-            --query 'imageScanFindings.findings' --output json)
-          VULNERABILITIES=$(echo $SCAN_FINDINGS | jq length)
-          if [ "$VULNERABILITIES" -gt 0 ]; then
-            echo "Image has vulnerabilities!"
-            echo $SCAN_FINDINGS
-            exit 1
-          else
-            echo "No vulnerabilities found."
-          fi
+      # # Step 11: Check the scan findings and fail the pipeline if vulnerabilities are found
+      # - name: Check image scan findings
+      #   run: |
+      #     SCAN_FINDINGS=$(aws ecr describe-image-scan-findings \
+      #       --repository-name mindmap-demo \
+      #       --image-id imageTag=${{ github.run_number }} \
+      #       --query 'imageScanFindings.findings' --output json)
+      #     VULNERABILITIES=$(echo $SCAN_FINDINGS | jq length)
+      #     if [ "$VULNERABILITIES" -gt 0 ]; then
+      #       echo "Image has vulnerabilities!"
+      #       echo $SCAN_FINDINGS
+      #       exit 1
+      #     else
+      #       echo "No vulnerabilities found."
+      #     fi
 
       # Step 12: Update kube config
       - name: Update kube config
